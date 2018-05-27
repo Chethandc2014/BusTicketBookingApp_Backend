@@ -1,5 +1,6 @@
 package com.safejourney.entity;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,24 +10,32 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "CITY", schema = "TICKET_BOOKING")
-public class City {
+@NamedQueries(
+		@NamedQuery(name = "findCityByStateId", query = "select c from City c where c.state.stateId = :stateId")
+		)
+public class City implements Serializable{
 
 	@Id
 	@Column(name = "CITY_ID")
-	private Integer cityId;
-	
+	private String cityId;
+
 	private String cityName;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "city")
 	private Set<Address> addresses = new HashSet<>(0);
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "STATE_ID")
+	@JsonIgnore
 	private State state;
 
 	public State getState() {
@@ -37,11 +46,11 @@ public class City {
 		this.state = state;
 	}
 
-	public Integer getCityId() {
+	public String getCityId() {
 		return cityId;
 	}
 
-	public void setCityId(Integer cityId) {
+	public void setCityId(String cityId) {
 		this.cityId = cityId;
 	}
 
